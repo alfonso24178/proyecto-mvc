@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Modificar Ticket</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="p-4 bg-light">
+
+<h3 class="mb-4">Modificar Ticket</h3>
+
+<form id="formModificar" method="post">
+    <div class="mb-3">
+        <label>Nombre de quien hace el tramite</label>
+    <input type="text" name="nombre_tramite" value="{{ ticket.nombre_tramite }}" class="form-control" required>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <label>Nombre</label>
+            <input type="text" name="nombre" value="{{ ticket.nombre }}" class="form-control" required>
+        </div>
+        <div class="col-md-4 mb-3">
+            <label>Paterno</label>
+            <input type="text" name="paterno" value="{{ ticket.paterno }}" class="form-control" required>
+        </div>
+        <div class="col-md-4 mb-3">
+            <label>Materno</label>
+            <input type="text" name="materno" value="{{ ticket.materno }}" class="form-control">
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <label>Teléfono</label>
+            <input type="text" name="telefono" value="{{ ticket.telefono }}" class="form-control">
+        </div>
+        <div class="col-md-4 mb-3">
+            <label>Celular</label>
+            <input type="text" name="celular" value="{{ ticket.celular }}" class="form-control">
+        </div>
+        <div class="col-md-4 mb-3">
+            <label>Correo</label>
+            <input type="email" name="correo" value="{{ ticket.correo }}" class="form-control">
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <label>Nivel</label>
+            <select name="id_nivel" class="form-select">
+                {% for nivel in niveles %}
+                    <option value="{{ nivel.id }}" {% if nivel.id == ticket.id_nivel %}selected{% endif %}>{{ nivel.nombre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-4 mb-3">
+            <label>Municipio</label>
+            <!-- Campo oculto que sí se envía -->
+            <input type="hidden" name="id_municipio" value="{{ ticket.id_municipio }}">
+            
+            <!-- Select deshabilitado solo para mostrar -->
+            <select class="form-select" disabled>
+                {% for m in municipios %}
+                    <option value="{{ m.id }}" {% if m.id == ticket.id_municipio %}selected{% endif %}>{{ m.nombre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="col-md-4 mb-3">
+            <label>Asunto</label>
+            <select name="id_asunto" class="form-select">
+                {% for a in asuntos %}
+                    <option value="{{ a.id }}" {% if a.id == ticket.id_asunto %}selected{% endif %}>{{ a.nombre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <button type="button" onclick="confirmar()" class="btn btn-success">Guardar Cambios</button>
+    <a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary ms-2">Cancelar</a>
+</form>
+
+<script>
+function confirmar() {
+    Swal.fire({
+        title: '¿Guardar cambios?',
+        text: "Se actualizará la información del ticket.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, guardar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById('formModificar').submit();
+        }
+    })
+}
+</script>
+
+</body>
+</html>
