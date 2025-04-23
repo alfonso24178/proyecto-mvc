@@ -1,6 +1,7 @@
 
 from flask import Blueprint, render_template, request, redirect, url_for, send_file, session, send_from_directory, flash, current_app, jsonify
 from app.models.models import Nivel, Municipio, Asunto, SolicitudTurno, Usuario
+from .api_client import get_all_materias, get_materia, create_materia, update_materia, delete_materia
 from app import db
 from sqlalchemy import func
 import requests
@@ -332,3 +333,52 @@ def api_tickets():
 @main.route('/ver-api')
 def ver_api():
     return render_template('ver_api.html')
+
+@main.route('/materias')
+def listar_materias():
+    materias = get_all_materias()
+    return render_template('materias/lista.html', materias=materias)
+
+@main.route('/buscar', methods=['GET', 'POST'])
+def buscar_materia():
+    resultado = None
+    if request.method == 'POST':
+        resultado = get_materia(request.form['cve_plan'], request.form['clave'])
+    return render_template('materias/buscar.html', resultado=resultado)
+
+@main.route('/crear', methods=['GET', 'POST'])
+def crear_materia():
+    if request.method == 'POST':
+        data = {
+            "clave": request.form['clave'],
+            "nombre": request.form['nombre'],
+            "creditos": request.form['creditos'],
+            "cve_plan": request.form['cve_plan']
+        }
+        create_materia(data)
+        return redirect(url_for('main.listar_materias'))
+    return render_template('materias/crear.html')
+
+@main.route('/editar', methods=['GET', 'POST'])
+def editar_materia():
+    resultado = None
+    if request.method == 'POST':
+        if 'buscar' in request.form:
+            resultado = get_materia(request.form['cve_plan'], request.form['clave'])
+        elif 'actualizar' in request.form:
+            data = {
+                "clave": request.form['clave'],
+                "nombre": request.form['nombre'],
+                "creditos": request.form['creditos'],
+                "cve_plan": request.form['cve_plan']
+            }
+            update_materia(data)
+            return redirect(url_for('main.listar_materias'))
+    return render_template('materias/editar.html', resultado=resultado)
+
+@main.route('/eliminar', methods=['GET', 'POST'])
+def eliminar_materia():
+    if request.method == 'POST':
+        delete_materia(request.form['clave'])
+        return redirect(url_for('main.listar_materias'))
+    return render_template('materias/eliminar.html')
